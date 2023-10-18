@@ -35,7 +35,25 @@ const addStudent = (req, res) => {
         res.status(201).json('Student Created Successfully!');
       }
     );
-    
+  });
+};
+
+const removeStudent = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  pool.query(queries.removeStudent, [id], (error, results) => {
+    const noStudentFound = !results.rows.length;
+    // if student doesn't exit
+    if (noStudentFound) {
+      return res
+        .status(400)
+        .json('Student does not exist in the database, could not remove.');
+    }
+
+    pool.query(queries.removeStudent, [id], (error, results) => {
+      if (error) throw error;
+      res.status(200).json('Student removed successfully.');
+    });
   });
 };
 
@@ -43,4 +61,5 @@ module.exports = {
   getStudents,
   getStudentById,
   addStudent,
+  removeStudent,
 };
